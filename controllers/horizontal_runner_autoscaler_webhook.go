@@ -208,9 +208,13 @@ func (autoscaler *HorizontalRunnerAutoscalerGitHubWebhook) Handle(w http.Respons
 			}
 
 			if e.GetAction() == "queued" {
+				msg := fmt.Sprintf("queud에 하나 증가했습니다.")
+				log.Info(msg)
 				target.Amount = 1
 				break
 			} else if e.GetAction() == "completed" && e.GetWorkflowJob().GetConclusion() != "skipped" {
+				msg := fmt.Sprintf("completed 되었습니다..")
+				log.Info(msg)
 				// A nagative amount is processed in the tryScale func as a scale-down request,
 				// that erasese the oldest CapacityReservation with the same amount.
 				// If the first CapacityReservation was with Replicas=1, this negative scale target erases that,
