@@ -141,7 +141,7 @@ func (autoscaler *HorizontalRunnerAutoscalerGitHubWebhook) Handle(w http.Respons
 
 	webhookType := gogithub.WebHookType(r)
 	event, err := gogithub.ParseWebHook(webhookType, payload)
-	logger.Info(event)
+	log.Info(event)
 
 	if err != nil {
 		var s string
