@@ -177,7 +177,6 @@ func extraLabel(key string, value string, labels prometheus.Labels) prometheus.L
 }
 
 type ParseResult struct {
-	ExitCode  string
 	QueueTime time.Duration
 	RunTime   time.Duration
 }
@@ -224,7 +223,7 @@ func (reader *EventReader) fetchAndParseWorkflowJobLogs(ctx context.Context, e *
 				// Get exit code
 				exitCodeMatch := exitCodeLine.FindStringSubmatch(line)
 				if exitCodeMatch != nil {
-					exitCode = exitCodeMatch[1]
+					continue
 				}
 				continue
 			}
@@ -245,7 +244,6 @@ func (reader *EventReader) fetchAndParseWorkflowJobLogs(ctx context.Context, e *
 	}()
 
 	return &ParseResult{
-		ExitCode:  exitCode,
 		QueueTime: startedTime.Sub(queuedTime),
 		RunTime:   completedTime.Sub(startedTime),
 	}, nil
