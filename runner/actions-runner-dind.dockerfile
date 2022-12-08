@@ -1,38 +1,60 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 ARG TARGETPLATFORM
 ARG RUNNER_VERSION=2.299.1
-ARG RUNNER_CONTAINER_HOOKS_VERSION=0.1.3
+ARG RUNNER_CONTAINER_HOOKS_VERSION=0.1.2
 # Docker and Docker Compose arguments
 ARG CHANNEL=stable
-ARG DOCKER_VERSION=20.10.21
-ARG DOCKER_COMPOSE_VERSION=v2.12.2
+ARG DOCKER_VERSION=20.10.18
+ARG DOCKER_COMPOSE_VERSION=v2.6.0
 ARG DUMB_INIT_VERSION=1.2.5
-ARG RUNNER_USER_UID=1001
-ARG DOCKER_GROUP_GID=121
+
+RUN test -n "$TARGETPLATFORM" || (echo "TARGETPLATFORM must be set" && false)
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -y \
+RUN apt update -y \
     && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:git-core/ppa \
     && apt-get update -y \
     && apt-get install -y --no-install-recommends \
+    build-essential \
     curl \
     ca-certificates \
+    dnsutils \
+    ftp \
     git \
     git-lfs \
+    iproute2 \
+    iputils-ping \
     iptables \
     jq \
+    libunwind8 \
+    locales \
+    netcat \
+    net-tools \
+    openssh-client \
+    parallel \
+    python3-pip \
+    rsync \
+    shellcheck \
     supervisor \
     software-properties-common \
     sudo \
+    telnet \
+    time \
+    tzdata \
     unzip \
+    upx \
+    wget \
     zip \
+    zstd \
+    && ln -sf /usr/bin/python3 /usr/bin/python \
+    && ln -sf /usr/bin/pip3 /usr/bin/pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Runner user
-RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
-    && groupadd docker --gid $DOCKER_GROUP_GID \
+RUN adduser --disabled-password --gecos "" --uid 1000 runner \
+    && groupadd docker \
     && usermod -aG sudo runner \
     && usermod -aG docker runner \
     && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers \
@@ -103,7 +125,7 @@ VOLUME /var/lib/docker
 
 # Add the Python "User Script Directory" to the PATH
 ENV PATH="${PATH}:${HOME}/.local/bin"
-ENV ImageOS=ubuntu22
+ENV ImageOS=ubuntu20
 
 RUN echo "PATH=${PATH}" > /etc/environment \
     && echo "ImageOS=${ImageOS}" >> /etc/environment

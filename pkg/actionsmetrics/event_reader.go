@@ -68,12 +68,10 @@ func (reader *EventReader) ProcessWorkflowJobEvent(ctx context.Context, event in
 	// switch on job status
 	switch action := e.GetAction(); action {
 	case "queued":
-		reader.Log.Info( "Queu에 하나 들어감")
 		githubWorkflowJobsQueuedTotal.With(labels).Inc()
 
 	case "in_progress":
 		githubWorkflowJobsStartedTotal.With(labels).Inc()
-		reader.Log.Info( "in_progress 중임")
 
 		if reader.GitHubClient == nil {
 			return
@@ -94,7 +92,6 @@ func (reader *EventReader) ProcessWorkflowJobEvent(ctx context.Context, event in
 
 	case "completed":
 		githubWorkflowJobsCompletedTotal.With(labels).Inc()
-		reader.Log.Info( "끝났음")
 
 		// job_conclusion -> (neutral, success, skipped, cancelled, timed_out, action_required, failure)
 		githubWorkflowJobConclusionsTotal.With(extraLabel("job_conclusion", *e.WorkflowJob.Conclusion, labels)).Inc()

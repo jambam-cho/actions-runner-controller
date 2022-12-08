@@ -141,7 +141,6 @@ func (autoscaler *HorizontalRunnerAutoscalerGitHubWebhook) Handle(w http.Respons
 
 	webhookType := gogithub.WebHookType(r)
 	event, err := gogithub.ParseWebHook(webhookType, payload)
-
 	if err != nil {
 		var s string
 		if payload != nil {
@@ -209,22 +208,14 @@ func (autoscaler *HorizontalRunnerAutoscalerGitHubWebhook) Handle(w http.Respons
 			}
 
 			if e.GetAction() == "queued" {
-				log.Info("queud에 하나 증가했습니다.")
-				log.V(2).Info("queud에 하나 증가했습니다!!")
 				target.Amount = 1
 				break
 			} else if e.GetAction() == "completed" && e.GetWorkflowJob().GetConclusion() != "skipped" {
-				log.Info("completed 되었습니다.")
-				log.V(2).Info("completed 되었습니다!!")
 				// A nagative amount is processed in the tryScale func as a scale-down request,
 				// that erasese the oldest CapacityReservation with the same amount.
 				// If the first CapacityReservation was with Replicas=1, this negative scale target erases that,
 				// so that the resulting desired replicas decreases by 1.
 				target.Amount = -1
-				break
-			} else if e.GetAction() == "in_progress" {
-				log.Info("in_progress 되었습니다.")
-				log.V(2).Info("in_progress 되었습니다!!")
 				break
 			}
 			// If the conclusion is "skipped", we will ignore it and fallthrough to the default case.

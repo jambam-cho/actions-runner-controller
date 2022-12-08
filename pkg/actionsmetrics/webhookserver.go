@@ -27,7 +27,6 @@ import (
 	"github.com/go-logr/logr"
 	gogithub "github.com/google/go-github/v47/github"
 	ctrl "sigs.k8s.io/controller-runtime"
-	
 
 	"github.com/actions-runner-controller/actions-runner-controller/github"
 )
