@@ -155,16 +155,6 @@ func (reader *EventReader) ProcessWorkflowJobEvent(ctx context.Context, event in
 			return
 		}
 
-		parseResult, err := reader.fetchAndParseWorkflowJobLogs(ctx, e)
-		if err != nil {
-			reader.Log.Error(err, "reading workflow job log")
-			return
-		} else {
-			reader.Log.Info("reading workflow_job logs",
-				"job_name", *e.WorkflowJob.Name,
-				"job_id", fmt.Sprint(*e.WorkflowJob.ID),
-			)
-		}
 
 
 	case "completed":
@@ -173,18 +163,7 @@ func (reader *EventReader) ProcessWorkflowJobEvent(ctx context.Context, event in
 		// job_conclusion -> (neutral, success, skipped, cancelled, timed_out, action_required, failure)
 
 
-		parseResult, err := reader.fetchAndParseWorkflowJobLogs(ctx, e)
-		if err != nil {
-			reader.Log.Error(err, "reading workflow job log")
-			return
-		} else {
-			reader.Log.Info("reading workflow_job logs",
-				"job_name", *e.WorkflowJob.Name,
-				"job_id", fmt.Sprint(*e.WorkflowJob.ID),
-			)
-		}
 		if *e.WorkflowJob.Conclusion == "failure" {
-			failedStep := "null"
 			for i, step := range e.WorkflowJob.Steps {
 
 				// *step.Conclusion ~
@@ -197,12 +176,7 @@ func (reader *EventReader) ProcessWorkflowJobEvent(ctx context.Context, event in
 				// "action_required",
 				// null
 				if *step.Conclusion == "failure" {
-					failedStep = fmt.Sprint(i)
-					break
-				}
-				if *step.Conclusion == "timed_out" {
-					failedStep = fmt.Sprint(i)
-					parseResult.ExitCode = "timed_out"
+
 					break
 				}
 			}
