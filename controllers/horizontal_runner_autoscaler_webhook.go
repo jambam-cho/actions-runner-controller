@@ -199,7 +199,6 @@ func (reader *EventReader) fetchAndParseWorkflowJobLogs(ctx context.Context, e *
 		return nil, err
 	}
 
-	exitCode := "null"
 
 	var (
 		queuedTime    time.Time
