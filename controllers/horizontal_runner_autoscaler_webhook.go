@@ -163,25 +163,6 @@ func (reader *EventReader) ProcessWorkflowJobEvent(ctx context.Context, event in
 		// job_conclusion -> (neutral, success, skipped, cancelled, timed_out, action_required, failure)
 
 
-		if *e.WorkflowJob.Conclusion == "failure" {
-			for i, step := range e.WorkflowJob.Steps {
-
-				// *step.Conclusion ~
-				// "success",
-				// "failure",
-				// "neutral",
-				// "cancelled",
-				// "skipped",
-				// "timed_out",
-				// "action_required",
-				// null
-				if *step.Conclusion == "failure" {
-
-					break
-				}
-			}
-		}
-
 
 	}
 }
