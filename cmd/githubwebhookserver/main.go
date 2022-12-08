@@ -172,6 +172,13 @@ func main() {
 		QueueLimit:     queueLimit,
 	}
 
+	webhookServer := &controllers.WebhookServer{
+		SecretKeyBytes: []byte(webhookSecretToken),
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", webhookServer.Handle)
+
 	if err = hraGitHubWebhook.SetupWithManager(mgr); err != nil {
 		logger.Error(err, "unable to create controller", "controller", "webhookbasedautoscaler")
 		os.Exit(1)
