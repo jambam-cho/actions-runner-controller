@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-logr/logr"
 	"github.com/actions-runner-controller/actions-runner-controller/github"
 	gogithub "github.com/google/go-github/v47/github"
 )
@@ -19,7 +18,6 @@ type server struct {
 	target string
 	Repo   string
 	client *github.Client
-	Log      logr.Logger
 }
 
 func New(client *github.Client, target string) *server {
@@ -73,8 +71,6 @@ func (s *server) Run(ctx context.Context) error {
 			if _, err := http.Post(s.target, "application/json", bytes.NewReader(p)); err != nil {
 				s.Errorf("failed forwarding delivery: %v", err)
 			}
-			Log.Info("#################################")
-			Log.Info(_)
 		}
 
 		time.Sleep(10 * time.Second)
