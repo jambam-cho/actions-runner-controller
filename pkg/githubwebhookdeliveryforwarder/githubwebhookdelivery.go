@@ -73,7 +73,7 @@ func (s *server) Run(ctx context.Context) error {
 			if _, err := http.Post(s.target, "application/json", bytes.NewReader(p)); err != nil {
 				s.Errorf("failed forwarding delivery: %v", err)
 			}
-			fmt.Printf("#################################")
+			Log.Info("#################################")
 			Log.Info(_)
 		}
 
