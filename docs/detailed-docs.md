@@ -1634,6 +1634,8 @@ Create one using e.g. `eksctl`. You can refer to [the EKS documentation](https:/
 
 Once you set up the service account, all you need is to add `serviceAccountName` and `fsGroup` to any pods that use the IAM-role enabled service account.
 
+`fsGroup` needs to be set to the UID of the `runner` Linux user that runs the runner agent (and dockerd in case you use dind-runner). For anyone using an Ubuntu 20.04 runner image it's `1000` and for Ubuntu 22.04 one it's `1001`.
+
 For `RunnerDeployment`, you can set those two fields under the runner spec at `RunnerDeployment.Spec.Template`:
 
 ```yaml
@@ -1647,7 +1649,10 @@ spec:
       repository: USER/REO
       serviceAccountName: my-service-account
       securityContext:
+        # For Ubuntu 20.04 runner
         fsGroup: 1000
+        # Use 1001 for Ubuntu 22.04 runner
+        #fsGroup: 1001
 ```
 ### Software Installed in the Runner Image
 
@@ -1655,16 +1660,15 @@ spec:
 The project supports being deployed on the various cloud Kubernetes platforms (e.g. EKS), it does not however aim to go beyond that. No cloud specific tooling is bundled in the base runner, this is an active decision to keep the overhead of maintaining the solution manageable.
 
 **Bundled Software**<br />
-The GitHub hosted runners include a large amount of pre-installed software packages. GitHub maintains a list in README files at <https://github.com/actions/virtual-environments/tree/main/images/linux>
+The GitHub hosted runners include a large amount of pre-installed software packages. GitHub maintains a list in README files at <https://github.com/actions/virtual-environments/tree/main/images/linux>.
 
-This solution maintains a few runner images with `latest` aligning with GitHub's Ubuntu version, these images do not contain all of the software installed on the GitHub runners. The images contain the following subset of packages from the GitHub runners:
+This solution maintains a few Ubuntu based runner images, these images do not contain all of the software installed on the GitHub runners. The images contain the following subset of packages from the GitHub runners:
 
-- Basic CLI packages
+- Some basic CLI packages
 - Git
 - Git LFS
 - Docker
 - Docker Compose
-- build-essentials
 
 The virtual environments from GitHub contain a lot more software packages (different versions of Java, Node.js, Golang, .NET, etc) which are not provided in the runner image. Most of these have dedicated setup actions which allow the tools to be installed on-demand in a workflow, for example: `actions/setup-java` or `actions/setup-node`
 
@@ -1673,21 +1677,21 @@ If there is a need to include packages in the runner image for which there is no
 ```shell
 FROM summerwind/actions-runner:latest
 
-RUN sudo apt update -y \
-  && sudo apt install YOUR_PACKAGE
+RUN sudo apt-get update -y \
+  && sudo apt-get install $YOUR_PACKAGES
   && sudo rm -rf /var/lib/apt/lists/*
 ```
 
-You can then configure the runner to use a custom docker image by configuring the `image` field of a `Runner` or `RunnerDeployment`:
+You can then configure the runner to use a custom docker image by configuring the `image` field of a `RunnerDeployment` or `RunnerSet`:
 
 ```yaml
 apiVersion: actions.summerwind.dev/v1alpha1
-kind: Runner
+kind: RunnerDeployment
 metadata:
   name: custom-runner
 spec:
   repository: actions-runner-controller/actions-runner-controller
-  image: YOUR_CUSTOM_DOCKER_IMAGE
+  image: YOUR_CUSTOM_RUNNER_IMAGE
 ```
 
 ### Using without cert-manager
