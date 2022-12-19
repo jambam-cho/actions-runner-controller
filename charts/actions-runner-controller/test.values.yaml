@@ -1,5 +1,8 @@
 logLevel: info
 replicaCount: 1
+image:
+  repository: "jambamcho/jambam-repo:actions-runner-controller-2.2"
+  actionsRunnerRepositoryAndTag: "jambamcho/jambam-repo:actions-runner-controller-2.2"
 authSecret:
   create: true
   name: "controller-manager"
