@@ -172,10 +172,13 @@ func (r *HorizontalRunnerAutoscalerReconciler) suggestReplicasByQueuedAndInProgr
 					// this is because we do not get a list of jobs for
 					// completed workflows in order to keep the number of API
 					// calls to a minimum.
+					r.Log.Info("completed 되었습니다.")
 				case "in_progress":
 					inProgress++
+					r.Log.Info("in_progress 중 입니다.")
 				case "queued":
 					queued++
+					r.Log.Info("queued 되었습니다.")
 				default:
 					unknown++
 				}
